@@ -23,7 +23,7 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [iterativeMode, setIterativeMode] = useState(false);
   const [userAPIKey, setUserAPIKey] = useState("");
-  const debouncedPrompt = useDebounce(prompt, 300);
+  const debouncedPrompt = useDebounce(prompt, 100);
   const [generations, setGenerations] = useState<
     { prompt: string; image: ImageResponse }[]
   >([]);
