@@ -1,5 +1,6 @@
 "use client";
 
+import * as RadioGroup from "@radix-ui/react-radio-group";
 import GithubIcon from "@/components/icons/github-icon";
 import PictureIcon from "@/components/icons/picture-icon";
 import XIcon from "@/components/icons/x-icon";
@@ -30,6 +31,7 @@ import fantasyImage from "@/public/styles/fantasy.png";
 import moodyImage from "@/public/styles/moody.png";
 import vibrantImage from "@/public/styles/vibrant.png";
 import cinematicImage from "@/public/styles/cinematic.png";
+import CheckIcon from "@/components/icons/check-icon";
 
 type ImageResponse = {
   b64_json: string;
@@ -40,22 +42,30 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [iterativeMode, setIterativeMode] = useState(false);
   const [userAPIKey, setUserAPIKey] = useState("");
+  const [selectedStyleValue, setSelectedStyleValue] = useState("");
   const debouncedPrompt = useDebounce(prompt, 100);
   const [generations, setGenerations] = useState<
     { prompt: string; image: ImageResponse }[]
   >([]);
   let [activeIndex, setActiveIndex] = useState<number>();
 
+  const selectedStyle = imageStyles.find((s) => s.value === selectedStyleValue);
+
   const { data: image, isFetching } = useQuery({
     placeholderData: (previousData) => previousData,
-    queryKey: [debouncedPrompt],
+    queryKey: [debouncedPrompt + selectedStyleValue],
     queryFn: async () => {
       let res = await fetch("/api/generateImages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt, userAPIKey, iterativeMode }),
+        body: JSON.stringify({
+          prompt,
+          style: selectedStyleValue,
+          userAPIKey,
+          iterativeMode,
+        }),
       });
 
       if (!res.ok) {
@@ -149,7 +159,9 @@ export default function Home() {
                       className="inline-flex items-center justify-center gap-1.5 rounded-sm border-[0.5px] border-gray-350 bg-gray-400 px-2 py-1.5 text-xs text-gray-200"
                     >
                       <PictureIcon className="size-[12px]" />
-                      Styles
+                      {selectedStyle
+                        ? `Style: ${selectedStyle.label}`
+                        : "Styles"}
                     </button>
                   </DialogTrigger>
                   <DialogContent>
@@ -163,50 +175,33 @@ export default function Home() {
                         </span>
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[
-                        {
-                          label: "Pop Art",
-                          value: "pop-art",
-                          image: popArtImage,
-                        },
-                        {
-                          label: "Minimal",
-                          value: "minimal",
-                          image: minimalImage,
-                        },
-                        { label: "Retro", value: "retro", image: retroImage },
-                        {
-                          label: "Watercolor",
-                          value: "watercolor",
-                          image: watercolorImage,
-                        },
-                        {
-                          label: "Fantasy",
-                          value: "fantasy",
-                          image: fantasyImage,
-                        },
-                        { label: "Moody", value: "moody", image: moodyImage },
-                        {
-                          label: "Vibrant",
-                          value: "vibrant",
-                          image: vibrantImage,
-                        },
-                        {
-                          label: "Cinematic",
-                          value: "cinematic",
-                          image: cinematicImage,
-                        },
-                      ].map((style) => (
-                        <div key={style.value}>
+                    <RadioGroup.Root
+                      value={selectedStyleValue}
+                      onValueChange={setSelectedStyleValue}
+                      className="grid grid-cols-2 gap-2 md:grid-cols-4"
+                    >
+                      {imageStyles.map((style) => (
+                        <RadioGroup.Item
+                          value={style.value}
+                          className="group relative"
+                          key={style.value}
+                        >
                           <Image
                             src={style.image}
                             alt=""
-                            className="aspect-square"
+                            className="aspect-square rounded transition group-data-[state=unchecked]:grayscale"
                           />
-                        </div>
+                          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/75 to-transparent p-2">
+                            <p className="text-xs font-bold text-white">
+                              {style.label}
+                            </p>
+                            <RadioGroup.Indicator className="inline-flex size-[14px] items-center justify-center rounded-full bg-white">
+                              <CheckIcon />
+                            </RadioGroup.Indicator>
+                          </div>
+                        </RadioGroup.Item>
                       ))}
-                    </div>
+                    </RadioGroup.Root>
                   </DialogContent>
                 </Dialog>
               </div>
@@ -322,3 +317,38 @@ export default function Home() {
     </div>
   );
 }
+
+const imageStyles = [
+  {
+    label: "Pop Art",
+    value: "pop-art",
+    image: popArtImage,
+  },
+  {
+    label: "Minimal",
+    value: "minimal",
+    image: minimalImage,
+  },
+  { label: "Retro", value: "retro", image: retroImage },
+  {
+    label: "Watercolor",
+    value: "watercolor",
+    image: watercolorImage,
+  },
+  {
+    label: "Fantasy",
+    value: "fantasy",
+    image: fantasyImage,
+  },
+  { label: "Moody", value: "moody", image: moodyImage },
+  {
+    label: "Vibrant",
+    value: "vibrant",
+    image: vibrantImage,
+  },
+  {
+    label: "Cinematic",
+    value: "cinematic",
+    image: cinematicImage,
+  },
+];
