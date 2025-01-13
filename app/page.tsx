@@ -1,20 +1,12 @@
 "use client";
 
-import * as RadioGroup from "@radix-ui/react-radio-group";
+import CheckIcon from "@/components/icons/check-icon";
 import GithubIcon from "@/components/icons/github-icon";
 import PictureIcon from "@/components/icons/picture-icon";
 import XIcon from "@/components/icons/x-icon";
 import Logo from "@/components/logo";
 import Spinner from "@/components/spinner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import imagePlaceholder from "@/public/image-placeholder.png";
-import { useQuery } from "@tanstack/react-query";
-import { useDebounce } from "@uidotdev/usehooks";
-import Image from "next/image";
-import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,15 +15,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import popArtImage from "@/public/styles/pop-art.png";
-import minimalImage from "@/public/styles/minimal.png";
-import retroImage from "@/public/styles/retro.png";
-import watercolorImage from "@/public/styles/watercolor.png";
-import fantasyImage from "@/public/styles/fantasy.png";
-import moodyImage from "@/public/styles/moody.png";
-import vibrantImage from "@/public/styles/vibrant.png";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import imagePlaceholder from "@/public/image-placeholder.png";
 import cinematicImage from "@/public/styles/cinematic.png";
-import CheckIcon from "@/components/icons/check-icon";
+import fantasyImage from "@/public/styles/fantasy.png";
+import minimalImage from "@/public/styles/minimal.png";
+import moodyImage from "@/public/styles/moody.png";
+import popArtImage from "@/public/styles/pop-art.png";
+import retroImage from "@/public/styles/retro.png";
+import vibrantImage from "@/public/styles/vibrant.png";
+import watercolorImage from "@/public/styles/watercolor.png";
+import * as RadioGroup from "@radix-ui/react-radio-group";
+import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "@uidotdev/usehooks";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type ImageResponse = {
   b64_json: string;
@@ -142,21 +141,17 @@ export default function Home() {
               <div>
                 <label
                   title="Use earlier images as references"
-                  className="inline-flex items-center gap-2"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded border-[0.5px] border-gray-350 bg-gray-500 px-2 py-1.5 shadow shadow-black"
                 >
                   <input
                     type="checkbox"
+                    className="accent-white"
                     checked={iterativeMode}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                      //
+                    onChange={() => {
+                      setIterativeMode(!iterativeMode);
                     }}
                   />
-                  Consistency mode
-                  <Switch
-                    checked={iterativeMode}
-                    onCheckedChange={setIterativeMode}
-                  />
+                  Consistency Mode
                 </label>
               </div>
               <div>
@@ -164,7 +159,7 @@ export default function Home() {
                   <DialogTrigger asChild>
                     <button
                       type="button"
-                      className="inline-flex items-center justify-center gap-1.5 rounded-sm border-[0.5px] border-gray-350 bg-gray-400 px-2 py-1.5 text-xs text-gray-200"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-sm border-[0.5px] border-gray-350 bg-gray-400 px-2 py-1.5 text-gray-200"
                     >
                       <PictureIcon className="size-[12px]" />
                       {selectedStyle
