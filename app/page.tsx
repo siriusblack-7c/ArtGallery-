@@ -1,6 +1,7 @@
 "use client";
 
 import GithubIcon from "@/components/icons/github-icon";
+import PictureIcon from "@/components/icons/picture-icon";
 import XIcon from "@/components/icons/x-icon";
 import Logo from "@/components/logo";
 import Spinner from "@/components/spinner";
@@ -13,6 +14,22 @@ import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import popArtImage from "@/public/styles/pop-art.png";
+import minimalImage from "@/public/styles/minimal.png";
+import retroImage from "@/public/styles/retro.png";
+import watercolorImage from "@/public/styles/watercolor.png";
+import fantasyImage from "@/public/styles/fantasy.png";
+import moodyImage from "@/public/styles/moody.png";
+import vibrantImage from "@/public/styles/vibrant.png";
+import cinematicImage from "@/public/styles/cinematic.png";
 
 type ImageResponse = {
   b64_json: string;
@@ -111,18 +128,88 @@ export default function Home() {
                 <Spinner className="size-4" />
               </div>
             </div>
-
-            <div className="mt-3 text-sm md:text-right">
-              <label
-                title="Use earlier images as references"
-                className="inline-flex items-center gap-2"
-              >
-                Consistency mode
-                <Switch
-                  checked={iterativeMode}
-                  onCheckedChange={setIterativeMode}
-                />
-              </label>
+            <div className="mt-3 flex items-center justify-end gap-1.5 text-sm md:text-right">
+              <div>
+                <label
+                  title="Use earlier images as references"
+                  className="inline-flex items-center gap-2"
+                >
+                  Consistency mode
+                  <Switch
+                    checked={iterativeMode}
+                    onCheckedChange={setIterativeMode}
+                  />
+                </label>
+              </div>
+              <div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-sm border-[0.5px] border-gray-350 bg-gray-400 px-2 py-1.5 text-xs text-gray-200"
+                    >
+                      <PictureIcon className="size-[12px]" />
+                      Styles
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Select a style</DialogTitle>
+                      <DialogDescription>
+                        Select a style to instantly transform your shots and
+                        bring out the best in your creative ideas.{" "}
+                        <span className="text-gray-350">
+                          Experiment, explore, and make it yours!
+                        </span>
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        {
+                          label: "Pop Art",
+                          value: "pop-art",
+                          image: popArtImage,
+                        },
+                        {
+                          label: "Minimal",
+                          value: "minimal",
+                          image: minimalImage,
+                        },
+                        { label: "Retro", value: "retro", image: retroImage },
+                        {
+                          label: "Watercolor",
+                          value: "watercolor",
+                          image: watercolorImage,
+                        },
+                        {
+                          label: "Fantasy",
+                          value: "fantasy",
+                          image: fantasyImage,
+                        },
+                        { label: "Moody", value: "moody", image: moodyImage },
+                        {
+                          label: "Vibrant",
+                          value: "vibrant",
+                          image: vibrantImage,
+                        },
+                        {
+                          label: "Cinematic",
+                          value: "cinematic",
+                          image: cinematicImage,
+                        },
+                      ].map((style) => (
+                        <div key={style.value}>
+                          <Image
+                            src={style.image}
+                            alt=""
+                            className="aspect-square"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </fieldset>
         </form>

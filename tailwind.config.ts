@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
+import tailwindcssAnimate from "tailwindcss-animate";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 const config: Config = {
   darkMode: ["class"],
@@ -70,8 +72,11 @@ const config: Config = {
           "5": "hsl(var(--chart-5))",
         },
       },
+      fontFamily: {
+        mono: ["var(--font-anonymous-pro)", ...defaultTheme.fontFamily.mono],
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 };
 export default config;
