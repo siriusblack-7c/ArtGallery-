@@ -144,6 +144,14 @@ export default function Home() {
                   title="Use earlier images as references"
                   className="inline-flex items-center gap-2"
                 >
+                  <input
+                    type="checkbox"
+                    checked={iterativeMode}
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                      //
+                    }}
+                  />
                   Consistency mode
                   <Switch
                     checked={iterativeMode}
@@ -188,7 +196,8 @@ export default function Home() {
                         >
                           <Image
                             src={style.image}
-                            alt=""
+                            sizes="(max-width: 768px) 50vw, 150px"
+                            alt={style.label}
                             className="aspect-square rounded transition group-data-[state=unchecked]:grayscale"
                           />
                           <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/75 to-transparent p-2">
