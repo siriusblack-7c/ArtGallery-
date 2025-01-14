@@ -10,8 +10,8 @@ let ratelimit: Ratelimit | undefined;
 if (process.env.UPSTASH_REDIS_REST_URL) {
   ratelimit = new Ratelimit({
     redis: Redis.fromEnv(),
-    // Allow 100 requests per day (~5-10 prompts)
-    limiter: Ratelimit.fixedWindow(50, "1440 m"),
+    // Allow 60 requests per day (~4-6 prompts), then need to use API key
+    limiter: Ratelimit.fixedWindow(60, "1440 m"),
     analytics: true,
     prefix: "blinkshot",
   });
@@ -61,8 +61,6 @@ export async function POST(req: Request) {
   if (style) {
     prompt += `. Use a ${style} style for the image.`;
   }
-
-  console.log(prompt);
 
   let response;
   try {
