@@ -40,7 +40,13 @@ type ImageResponse = {
 export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [iterativeMode, setIterativeMode] = useState(false);
-  const [userAPIKey, setUserAPIKey] = useState("");
+  const [userAPIKey, setUserAPIKey] = useState(() => {
+    // Only run in browser
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("togetherApiKey") || "";
+    }
+    return "";
+  });
   const [selectedStyleValue, setSelectedStyleValue] = useState("");
   const debouncedPrompt = useDebounce(prompt, 350);
   const [generations, setGenerations] = useState<
@@ -85,6 +91,14 @@ export default function Home() {
       setActiveIndex(generations.length);
     }
   }, [generations, image, prompt]);
+
+  useEffect(() => {
+    if (userAPIKey) {
+      localStorage.setItem("togetherApiKey", userAPIKey);
+    } else {
+      localStorage.removeItem("togetherApiKey");
+    }
+  }, [userAPIKey]);
 
   let activeImage =
     activeIndex !== undefined ? generations[activeIndex].image : undefined;
@@ -193,7 +207,7 @@ export default function Home() {
                             src={style.image}
                             sizes="(max-width: 768px) 50vw, 150px"
                             alt={style.label}
-                            className="aspect-square rounded transition group-data-[state=unchecked]:grayscale"
+                            className="aspect-square rounded transition group-data-[state=checked]:opacity-100 group-data-[state=unchecked]:opacity-50"
                           />
                           <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/75 to-transparent p-2">
                             <p className="text-xs font-bold text-white">
