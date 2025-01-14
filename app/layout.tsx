@@ -2,16 +2,13 @@ import Providers from "@/app/providers";
 import bgPattern from "@/public/bg-pattern-transparent.png";
 import type { Metadata } from "next";
 import PlausibleProvider from "next-plausible";
-import localFont from "next/font/local";
+import { Anonymous_Pro } from "next/font/google";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
+const anonymousPro = Anonymous_Pro({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-anonymous-pro",
 });
 
 let title = "BlinkShot – Real-Time AI Image Generator";
@@ -50,13 +47,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className={`h-full ${anonymousPro.variable} font-mono`}>
       <head>
         <meta name="color-scheme" content="dark" />
         <PlausibleProvider domain="blinkshot.io" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} dark h-full min-h-full bg-[length:6px] font-mono text-gray-100 antialiased`}
+        className="dark h-full min-h-full bg-[length:6px] font-mono text-gray-100 antialiased"
         style={{ backgroundImage: `url(${bgPattern.src}` }}
       >
         <Providers>{children}</Providers>

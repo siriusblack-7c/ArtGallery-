@@ -19,11 +19,12 @@ if (process.env.UPSTASH_REDIS_REST_URL) {
 
 export async function POST(req: Request) {
   let json = await req.json();
-  let { prompt, userAPIKey, iterativeMode } = z
+  let { prompt, userAPIKey, iterativeMode, style } = z
     .object({
       prompt: z.string(),
       iterativeMode: z.boolean(),
       userAPIKey: z.string().optional(),
+      style: z.string().optional(),
     })
     .parse(json);
 
@@ -56,6 +57,12 @@ export async function POST(req: Request) {
       );
     }
   }
+
+  if (style) {
+    prompt += `. Use a ${style} style for the image.`;
+  }
+
+  console.log(prompt);
 
   let response;
   try {

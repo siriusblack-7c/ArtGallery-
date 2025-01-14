@@ -1,14 +1,32 @@
 "use client";
 
+import CheckIcon from "@/components/icons/check-icon";
 import GithubIcon from "@/components/icons/github-icon";
+import PictureIcon from "@/components/icons/picture-icon";
 import XIcon from "@/components/icons/x-icon";
 import Logo from "@/components/logo";
 import Spinner from "@/components/spinner";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import imagePlaceholder from "@/public/image-placeholder.png";
+import cinematicImage from "@/public/styles/cinematic.png";
+import fantasyImage from "@/public/styles/fantasy.png";
+import minimalImage from "@/public/styles/minimal.png";
+import moodyImage from "@/public/styles/moody.png";
+import popArtImage from "@/public/styles/pop-art.png";
+import retroImage from "@/public/styles/retro.png";
+import vibrantImage from "@/public/styles/vibrant.png";
+import watercolorImage from "@/public/styles/watercolor.png";
+import * as RadioGroup from "@radix-ui/react-radio-group";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import Image from "next/image";
@@ -23,22 +41,30 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [iterativeMode, setIterativeMode] = useState(false);
   const [userAPIKey, setUserAPIKey] = useState("");
-  const debouncedPrompt = useDebounce(prompt, 100);
+  const [selectedStyleValue, setSelectedStyleValue] = useState("");
+  const debouncedPrompt = useDebounce(prompt, 350);
   const [generations, setGenerations] = useState<
     { prompt: string; image: ImageResponse }[]
   >([]);
   let [activeIndex, setActiveIndex] = useState<number>();
 
+  const selectedStyle = imageStyles.find((s) => s.value === selectedStyleValue);
+
   const { data: image, isFetching } = useQuery({
     placeholderData: (previousData) => previousData,
-    queryKey: [debouncedPrompt],
+    queryKey: [debouncedPrompt + selectedStyleValue],
     queryFn: async () => {
       let res = await fetch("/api/generateImages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt, userAPIKey, iterativeMode }),
+        body: JSON.stringify({
+          prompt,
+          style: selectedStyleValue,
+          userAPIKey,
+          iterativeMode,
+        }),
       });
 
       if (!res.ok) {
@@ -111,18 +137,78 @@ export default function Home() {
                 <Spinner className="size-4" />
               </div>
             </div>
-
-            <div className="mt-3 text-sm md:text-right">
-              <label
-                title="Use earlier images as references"
-                className="inline-flex items-center gap-2"
-              >
-                Consistency mode
-                <Switch
-                  checked={iterativeMode}
-                  onCheckedChange={setIterativeMode}
-                />
-              </label>
+            <div className="mt-3 flex items-center justify-end gap-1.5 text-sm md:text-right">
+              <div>
+                <label
+                  title="Use earlier images as references"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded border-[0.5px] border-gray-350 bg-gray-500 px-2 py-1.5 shadow shadow-black"
+                >
+                  <input
+                    type="checkbox"
+                    className="accent-white"
+                    checked={iterativeMode}
+                    onChange={() => {
+                      setIterativeMode(!iterativeMode);
+                    }}
+                  />
+                  Consistency Mode
+                </label>
+              </div>
+              <div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-sm border-[0.5px] border-gray-350 bg-gray-400 px-2 py-1.5 text-gray-200"
+                    >
+                      <PictureIcon className="size-[12px]" />
+                      {selectedStyle
+                        ? `Style: ${selectedStyle.label}`
+                        : "Styles"}
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Select a style</DialogTitle>
+                      <DialogDescription>
+                        Select a style to instantly transform your shots and
+                        bring out the best in your creative ideas.{" "}
+                        <span className="text-gray-350">
+                          Experiment, explore, and make it yours!
+                        </span>
+                      </DialogDescription>
+                    </DialogHeader>
+                    <RadioGroup.Root
+                      value={selectedStyleValue}
+                      onValueChange={setSelectedStyleValue}
+                      className="grid grid-cols-2 gap-2 md:grid-cols-4"
+                    >
+                      {imageStyles.map((style) => (
+                        <RadioGroup.Item
+                          value={style.value}
+                          className="group relative"
+                          key={style.value}
+                        >
+                          <Image
+                            src={style.image}
+                            sizes="(max-width: 768px) 50vw, 150px"
+                            alt={style.label}
+                            className="aspect-square rounded transition group-data-[state=unchecked]:grayscale"
+                          />
+                          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/75 to-transparent p-2">
+                            <p className="text-xs font-bold text-white">
+                              {style.label}
+                            </p>
+                            <RadioGroup.Indicator className="inline-flex size-[14px] items-center justify-center rounded-full bg-white">
+                              <CheckIcon />
+                            </RadioGroup.Indicator>
+                          </div>
+                        </RadioGroup.Item>
+                      ))}
+                    </RadioGroup.Root>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
           </fieldset>
         </form>
@@ -235,3 +321,38 @@ export default function Home() {
     </div>
   );
 }
+
+const imageStyles = [
+  {
+    label: "Pop Art",
+    value: "pop-art",
+    image: popArtImage,
+  },
+  {
+    label: "Minimal",
+    value: "minimal",
+    image: minimalImage,
+  },
+  { label: "Retro", value: "retro", image: retroImage },
+  {
+    label: "Watercolor",
+    value: "watercolor",
+    image: watercolorImage,
+  },
+  {
+    label: "Fantasy",
+    value: "fantasy",
+    image: fantasyImage,
+  },
+  { label: "Moody", value: "moody", image: moodyImage },
+  {
+    label: "Vibrant",
+    value: "vibrant",
+    image: vibrantImage,
+  },
+  {
+    label: "Cinematic",
+    value: "cinematic",
+    image: cinematicImage,
+  },
+];
