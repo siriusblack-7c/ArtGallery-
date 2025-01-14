@@ -42,7 +42,7 @@ export default function Home() {
   const [iterativeMode, setIterativeMode] = useState(false);
   const [userAPIKey, setUserAPIKey] = useState("");
   const [selectedStyleValue, setSelectedStyleValue] = useState("");
-  const debouncedPrompt = useDebounce(prompt, 100);
+  const debouncedPrompt = useDebounce(prompt, 350);
   const [generations, setGenerations] = useState<
     { prompt: string; image: ImageResponse }[]
   >([]);
