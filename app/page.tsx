@@ -112,7 +112,7 @@ export default function Home() {
     <div className="flex h-full flex-col px-5">
       <header className="flex justify-center pt-20 md:justify-end md:pt-3">
         <div className="absolute left-1/2 top-6 -translate-x-1/2">
-          <a href="https://www.dub.sh/together-ai" target="_blank">
+          <a href="https://togetherai.link" target="_blank">
             <Logo />
           </a>
         </div>
@@ -285,7 +285,7 @@ export default function Home() {
         <p>
           Powered by{" "}
           <a
-            href="https://www.dub.sh/together-ai"
+            href="https://togetherai.link"
             target="_blank"
             className="underline underline-offset-4 transition hover:text-blue-500"
           >
@@ -293,7 +293,7 @@ export default function Home() {
           </a>{" "}
           &{" "}
           <a
-            href="https://dub.sh/together-flux"
+            href="https://togetherai.link/together-flux"
             target="_blank"
             className="underline underline-offset-4 transition hover:text-blue-500"
           >
