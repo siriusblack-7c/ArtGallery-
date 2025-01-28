@@ -110,8 +110,8 @@ export default function Home() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="bg-cyan-600 py-2 text-center text-white">
-        <p className="">
+      <div className="bg-cyan-600 p-2 text-center text-white">
+        <p className="text-balance">
           Check out{" "}
           <a
             href="https://loras.dev"
