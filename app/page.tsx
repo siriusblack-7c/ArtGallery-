@@ -109,234 +109,249 @@ export default function Home() {
     activeIndex !== undefined ? generations[activeIndex].image : undefined;
 
   return (
-    <div className="flex h-full flex-col px-5">
-      <header className="flex justify-center pt-20 md:justify-end md:pt-3">
-        <div className="absolute left-1/2 top-6 -translate-x-1/2">
-          <a href="https://togetherai.link" target="_blank">
-            <Logo />
-          </a>
-        </div>
-        <div>
-          <label className="text-xs text-gray-200">
-            [Optional] Add your{" "}
-            <a
-              href="https://api.together.xyz/settings/api-keys"
-              target="_blank"
-              className="underline underline-offset-4 transition hover:text-blue-500"
-            >
-              Together API Key
-            </a>{" "}
-          </label>
-          <Input
-            placeholder="API Key"
-            type="password"
-            value={userAPIKey}
-            className="mt-1 bg-gray-400 text-gray-200 placeholder:text-gray-300"
-            onChange={(e) => setUserAPIKey(e.target.value)}
-          />
-        </div>
-      </header>
-
-      <div className="flex justify-center">
-        <form className="mt-10 w-full max-w-lg">
-          <fieldset>
-            <div className="relative">
-              <Textarea
-                rows={4}
-                spellCheck={false}
-                placeholder="Describe your image..."
-                required
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                className="w-full resize-none border-gray-300 border-opacity-50 bg-gray-400 px-4 text-base placeholder-gray-300"
-              />
-              <div
-                className={`${isFetching || isDebouncing ? "flex" : "hidden"} absolute bottom-3 right-3 items-center justify-center`}
-              >
-                <Spinner className="size-4" />
-              </div>
-            </div>
-            <div className="mt-3 flex items-center justify-end gap-1.5 text-sm md:text-right">
-              <div>
-                <label
-                  title="Use earlier images as references"
-                  className="inline-flex cursor-pointer items-center gap-2 rounded border-[0.5px] border-gray-350 bg-gray-500 px-2 py-1.5 shadow shadow-black"
-                >
-                  <input
-                    type="checkbox"
-                    className="accent-white"
-                    checked={iterativeMode}
-                    onChange={() => {
-                      setIterativeMode(!iterativeMode);
-                    }}
-                  />
-                  Consistency Mode
-                </label>
-              </div>
-              <div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center gap-1.5 rounded-sm border-[0.5px] border-gray-350 bg-gray-400 px-2 py-1.5 text-gray-200"
-                    >
-                      <PictureIcon className="size-[12px]" />
-                      {selectedStyle
-                        ? `Style: ${selectedStyle.label}`
-                        : "Styles"}
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="p-10">
-                    <DialogHeader>
-                      <DialogTitle>Select a style</DialogTitle>
-                      <DialogDescription>
-                        Select a style to instantly transform your shots and
-                        bring out the best in your creative ideas.{" "}
-                        <span className="text-gray-350">
-                          Experiment, explore, and make it yours!
-                        </span>
-                      </DialogDescription>
-                    </DialogHeader>
-                    <RadioGroup.Root
-                      value={selectedStyleValue}
-                      onValueChange={setSelectedStyleValue}
-                      className="grid grid-cols-2 gap-2 md:grid-cols-4"
-                    >
-                      {imageStyles.map((style) => (
-                        <RadioGroup.Item
-                          value={style.value}
-                          className="group relative"
-                          key={style.value}
-                        >
-                          <Image
-                            src={style.image}
-                            sizes="(max-width: 768px) 50vw, 150px"
-                            alt={style.label}
-                            className="aspect-square rounded transition group-data-[state=checked]:opacity-100 group-data-[state=unchecked]:opacity-50"
-                          />
-                          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/75 to-transparent p-2">
-                            <p className="text-xs font-bold text-white">
-                              {style.label}
-                            </p>
-                            <RadioGroup.Indicator className="inline-flex size-[14px] items-center justify-center rounded-full bg-white">
-                              <CheckIcon />
-                            </RadioGroup.Indicator>
-                          </div>
-                        </RadioGroup.Item>
-                      ))}
-                    </RadioGroup.Root>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-          </fieldset>
-        </form>
-      </div>
-
-      <div className="flex w-full grow flex-col items-center justify-center pb-8 pt-4 text-center">
-        {!activeImage || !prompt ? (
-          <div className="max-w-xl md:max-w-4xl lg:max-w-3xl">
-            <p className="text-xl font-semibold text-gray-200 md:text-3xl lg:text-4xl">
-              Generate images in real-time
-            </p>
-            <p className="mt-4 text-balance text-sm text-gray-300 md:text-base lg:text-lg">
-              Enter a prompt and generate images in milliseconds as you type.
-              Powered by Flux on Together AI.
-            </p>
-          </div>
-        ) : (
-          <div className="mt-4 flex w-full max-w-4xl flex-col justify-center">
-            <div>
-              <Image
-                placeholder="blur"
-                blurDataURL={imagePlaceholder.blurDataURL}
-                width={1024}
-                height={768}
-                src={`data:image/png;base64,${activeImage.b64_json}`}
-                alt=""
-                className={`${isFetching ? "animate-pulse" : ""} max-w-full rounded-lg object-cover shadow-sm shadow-black`}
-              />
-            </div>
-
-            <div className="mt-4 flex gap-4 overflow-x-scroll pb-4">
-              {generations.map((generatedImage, i) => (
-                <button
-                  key={i}
-                  className="w-32 shrink-0 opacity-50 hover:opacity-100"
-                  onClick={() => setActiveIndex(i)}
-                >
-                  <Image
-                    placeholder="blur"
-                    blurDataURL={imagePlaceholder.blurDataURL}
-                    width={1024}
-                    height={768}
-                    src={`data:image/png;base64,${generatedImage.image.b64_json}`}
-                    alt=""
-                    className="max-w-full rounded-lg object-cover shadow-sm shadow-black"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <footer className="mt-16 w-full items-center pb-10 text-center text-gray-300 md:mt-4 md:flex md:justify-between md:pb-5 md:text-xs lg:text-sm">
-        <p>
-          Powered by{" "}
+    <div className="flex h-full flex-col">
+      <div className="bg-cyan-600 py-2 text-center text-white">
+        <p className="">
+          Check out{" "}
           <a
-            href="https://togetherai.link"
+            href="https://loras.dev"
+            className="font-semibold underline"
             target="_blank"
-            className="underline underline-offset-4 transition hover:text-blue-500"
           >
-            Together.ai
+            Loras.dev
           </a>{" "}
-          &{" "}
-          <a
-            href="https://togetherai.link/together-flux"
-            target="_blank"
-            className="underline underline-offset-4 transition hover:text-blue-500"
-          >
-            Flux
-          </a>
+          to generate stylized AI Images
         </p>
+      </div>
+      <div className="relative mt-3 flex h-full flex-col px-5">
+        <header className="flex justify-center pt-20 md:justify-end md:pt-3">
+          <div className="absolute left-1/2 top-6 -translate-x-1/2">
+            <a href="https://togetherai.link" target="_blank">
+              <Logo />
+            </a>
+          </div>
+          <div>
+            <label className="text-xs text-gray-200">
+              [Optional] Add your{" "}
+              <a
+                href="https://api.together.xyz/settings/api-keys"
+                target="_blank"
+                className="underline underline-offset-4 transition hover:text-blue-500"
+              >
+                Together API Key
+              </a>{" "}
+            </label>
+            <Input
+              placeholder="API Key"
+              type="password"
+              value={userAPIKey}
+              className="mt-1 bg-gray-400 text-gray-200 placeholder:text-gray-300"
+              onChange={(e) => setUserAPIKey(e.target.value)}
+            />
+          </div>
+        </header>
 
-        <div className="mt-8 flex items-center justify-center md:mt-0 md:justify-between md:gap-6">
-          <p className="hidden whitespace-nowrap md:block">
-            100% free and{" "}
+        <div className="flex justify-center">
+          <form className="mt-10 w-full max-w-lg">
+            <fieldset>
+              <div className="relative">
+                <Textarea
+                  rows={4}
+                  spellCheck={false}
+                  placeholder="Describe your image..."
+                  required
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  className="w-full resize-none border-gray-300 border-opacity-50 bg-gray-400 px-4 text-base placeholder-gray-300"
+                />
+                <div
+                  className={`${isFetching || isDebouncing ? "flex" : "hidden"} absolute bottom-3 right-3 items-center justify-center`}
+                >
+                  <Spinner className="size-4" />
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-end gap-1.5 text-sm md:text-right">
+                <div>
+                  <label
+                    title="Use earlier images as references"
+                    className="inline-flex cursor-pointer items-center gap-2 rounded border-[0.5px] border-gray-350 bg-gray-500 px-2 py-1.5 shadow shadow-black"
+                  >
+                    <input
+                      type="checkbox"
+                      className="accent-white"
+                      checked={iterativeMode}
+                      onChange={() => {
+                        setIterativeMode(!iterativeMode);
+                      }}
+                    />
+                    Consistency Mode
+                  </label>
+                </div>
+                <div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button
+                        type="button"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-sm border-[0.5px] border-gray-350 bg-gray-400 px-2 py-1.5 text-gray-200"
+                      >
+                        <PictureIcon className="size-[12px]" />
+                        {selectedStyle
+                          ? `Style: ${selectedStyle.label}`
+                          : "Styles"}
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="p-10">
+                      <DialogHeader>
+                        <DialogTitle>Select a style</DialogTitle>
+                        <DialogDescription>
+                          Select a style to instantly transform your shots and
+                          bring out the best in your creative ideas.{" "}
+                          <span className="text-gray-350">
+                            Experiment, explore, and make it yours!
+                          </span>
+                        </DialogDescription>
+                      </DialogHeader>
+                      <RadioGroup.Root
+                        value={selectedStyleValue}
+                        onValueChange={setSelectedStyleValue}
+                        className="grid grid-cols-2 gap-2 md:grid-cols-4"
+                      >
+                        {imageStyles.map((style) => (
+                          <RadioGroup.Item
+                            value={style.value}
+                            className="group relative"
+                            key={style.value}
+                          >
+                            <Image
+                              src={style.image}
+                              sizes="(max-width: 768px) 50vw, 150px"
+                              alt={style.label}
+                              className="aspect-square rounded transition group-data-[state=checked]:opacity-100 group-data-[state=unchecked]:opacity-50"
+                            />
+                            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/75 to-transparent p-2">
+                              <p className="text-xs font-bold text-white">
+                                {style.label}
+                              </p>
+                              <RadioGroup.Indicator className="inline-flex size-[14px] items-center justify-center rounded-full bg-white">
+                                <CheckIcon />
+                              </RadioGroup.Indicator>
+                            </div>
+                          </RadioGroup.Item>
+                        ))}
+                      </RadioGroup.Root>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+
+        <div className="flex w-full grow flex-col items-center justify-center pb-8 pt-4 text-center">
+          {!activeImage || !prompt ? (
+            <div className="max-w-xl md:max-w-4xl lg:max-w-3xl">
+              <p className="text-xl font-semibold text-gray-200 md:text-3xl lg:text-4xl">
+                Generate images in real-time
+              </p>
+              <p className="mt-4 text-balance text-sm text-gray-300 md:text-base lg:text-lg">
+                Enter a prompt and generate images in milliseconds as you type.
+                Powered by Flux on Together AI.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-4 flex w-full max-w-4xl flex-col justify-center">
+              <div>
+                <Image
+                  placeholder="blur"
+                  blurDataURL={imagePlaceholder.blurDataURL}
+                  width={1024}
+                  height={768}
+                  src={`data:image/png;base64,${activeImage.b64_json}`}
+                  alt=""
+                  className={`${isFetching ? "animate-pulse" : ""} max-w-full rounded-lg object-cover shadow-sm shadow-black`}
+                />
+              </div>
+
+              <div className="mt-4 flex gap-4 overflow-x-scroll pb-4">
+                {generations.map((generatedImage, i) => (
+                  <button
+                    key={i}
+                    className="w-32 shrink-0 opacity-50 hover:opacity-100"
+                    onClick={() => setActiveIndex(i)}
+                  >
+                    <Image
+                      placeholder="blur"
+                      blurDataURL={imagePlaceholder.blurDataURL}
+                      width={1024}
+                      height={768}
+                      src={`data:image/png;base64,${generatedImage.image.b64_json}`}
+                      alt=""
+                      className="max-w-full rounded-lg object-cover shadow-sm shadow-black"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <footer className="mt-16 w-full items-center pb-10 text-center text-gray-300 md:mt-4 md:flex md:justify-between md:pb-5 md:text-xs lg:text-sm">
+          <p>
+            Powered by{" "}
             <a
-              href="https://github.com/Nutlope/blinkshot"
+              href="https://togetherai.link"
               target="_blank"
               className="underline underline-offset-4 transition hover:text-blue-500"
             >
-              open source
+              Together.ai
+            </a>{" "}
+            &{" "}
+            <a
+              href="https://togetherai.link/together-flux"
+              target="_blank"
+              className="underline underline-offset-4 transition hover:text-blue-500"
+            >
+              Flux
             </a>
           </p>
 
-          <div className="flex gap-6 md:gap-2">
-            <a href="https://github.com/Nutlope/blinkshot" target="_blank">
-              <Button
-                variant="outline"
-                size="sm"
-                className="inline-flex items-center gap-2"
+          <div className="mt-8 flex items-center justify-center md:mt-0 md:justify-between md:gap-6">
+            <p className="hidden whitespace-nowrap md:block">
+              100% free and{" "}
+              <a
+                href="https://github.com/Nutlope/blinkshot"
+                target="_blank"
+                className="underline underline-offset-4 transition hover:text-blue-500"
               >
-                <GithubIcon className="size-4" />
-                GitHub
-              </Button>
-            </a>
-            <a href="https://x.com/nutlope" target="_blank">
-              <Button
-                size="sm"
-                variant="outline"
-                className="inline-flex items-center gap-2"
-              >
-                <XIcon className="size-3" />
-                Twitter
-              </Button>
-            </a>
+                open source
+              </a>
+            </p>
+
+            <div className="flex gap-6 md:gap-2">
+              <a href="https://github.com/Nutlope/blinkshot" target="_blank">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="inline-flex items-center gap-2"
+                >
+                  <GithubIcon className="size-4" />
+                  GitHub
+                </Button>
+              </a>
+              <a href="https://x.com/nutlope" target="_blank">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="inline-flex items-center gap-2"
+                >
+                  <XIcon className="size-3" />
+                  Twitter
+                </Button>
+              </a>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }
