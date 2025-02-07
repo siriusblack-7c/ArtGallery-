@@ -10,8 +10,8 @@ let ratelimit: Ratelimit | undefined;
 if (process.env.UPSTASH_REDIS_REST_URL) {
   ratelimit = new Ratelimit({
     redis: Redis.fromEnv(),
-    // Allow 10 requests per day (~1-2 prompts), then need to use API key
-    limiter: Ratelimit.fixedWindow(10, "1440 m"),
+    // Allow 5 requests per day (~1 prompt), then need to use API key
+    limiter: Ratelimit.fixedWindow(5, "1440 m"),
     analytics: true,
     prefix: "blinkshot",
   });
