@@ -110,17 +110,17 @@ export default function Home() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="bg-cyan-600 p-2 text-center text-white">
+      <div className="bg-gray-200 p-2 text-center text-black">
         <p className="text-balance">
           Check out{" "}
           <a
-            href="https://loras.dev"
+            href="https://chat.together.ai"
             className="font-semibold underline"
             target="_blank"
           >
-            Loras.dev
+            Together Chat
           </a>{" "}
-          to generate stylized AI Images
+          to use DeepSeek R1 for free
         </p>
       </div>
       <div className="relative mt-3 flex h-full flex-col px-5">
