@@ -1,12 +1,8 @@
 "use client";
 
 import CheckIcon from "@/components/icons/check-icon";
-import GithubIcon from "@/components/icons/github-icon";
 import PictureIcon from "@/components/icons/picture-icon";
-import XIcon from "@/components/icons/x-icon";
-import Logo from "@/components/logo";
 import Spinner from "@/components/spinner";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -110,10 +106,10 @@ export default function Home() {
 
   return (
     <div className="flex h-full flex-col">
-      
+
       <div className="relative mt-3 flex h-full flex-col px-5">
         <header className="flex justify-center pt-20 md:justify-end md:pt-3">
-          
+
           <div>
             <label className="text-xs text-gray-200">
               [Optional] Add your{" "}
@@ -239,7 +235,7 @@ export default function Home() {
               </p>
               <p className="mt-4 text-balance text-sm text-gray-300 md:text-base lg:text-lg">
                 Enter a prompt and generate images in milliseconds as you type.
-                
+
               </p>
             </div>
           ) : (
